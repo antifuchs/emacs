@@ -373,9 +373,11 @@ bootstrap_exe = ../src/bootstrap-emacs$(EXEEXT)
 ifeq ($(DUMPING),pdumper)
 bootstrap_pdmp := bootstrap-emacs.pdmp # Keep in sync with loadup.el
 pdmp := emacs.pdmp
+nsapp_pdmp := nsapp-emacs.pdmp
 else
 bootstrap_pdmp :=
 pdmp :=
+nsapp_pdmp :=
 endif
 
 # Flags that might be in WARN_CFLAGS but are not valid for Objective C.
@@ -589,6 +591,14 @@ $(pdmp): emacs$(EXEEXT)
 	LC_ALL=C $(RUN_TEMACS) -batch $(BUILD_DETAILS) -l loadup --temacs=pdump \
 		--bin-dest $(BIN_DESTDIR) --eln-dest $(ELN_DESTDIR)
 	cp -f $@ $(bootstrap_pdmp)
+
+ns_appbindir=@ns_appbindir@
+ns_appresdir=@ns_appresdir@
+NSAPP_ELN_DESTDIR = "${ns_appresdir}${libexecdir}/emacs/${version}/${configuration}"
+
+$(nsapp_pdmp): emacs$(EXEEXT) $(pdmp)
+	LC_ALL=C $(RUN_TEMACS) -batch $(BUILD_DETAILS) -l loadup --temacs=pdump \
+		--bin-dest $(ns_appbindir) --eln-dest $(NSAPP_ELN_DESTDIR) --output-file-name $@
 endif
 
 ## We run make-docfile twice because the command line may get too long
