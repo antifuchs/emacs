@@ -1520,6 +1520,12 @@ egetenv_internal (const char *var, ptrdiff_t len)
 void
 init_callproc_1 (void)
 {
+  /* This function can be called from within pdumper or later during
+     boot.  No need to run it twice.  */
+  static bool double_run_guard;
+  if (double_run_guard)
+    return;
+  double_run_guard = true;
 #ifdef HAVE_NS
   const char *etc_dir = ns_etc_directory ();
   const char *path_exec = ns_exec_path ();
